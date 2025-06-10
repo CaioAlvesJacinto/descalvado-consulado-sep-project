@@ -19,7 +19,7 @@ FROM node:18-alpine
 WORKDIR /app
 COPY --from=backend-builder /app/backend/dist ./dist
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+COPY --from=backend-builder /app/backend/node_modules ./node_modules
 COPY backend/package*.json ./
-RUN yarn install --production
 EXPOSE 3333
 CMD ["node", "dist/server.js"]
