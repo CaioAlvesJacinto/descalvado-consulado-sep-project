@@ -44,10 +44,13 @@ app.get("/health", (_req: Request, res: Response) => {
 
 // Serve frontend se estiver em produção
 if (process.env.NODE_ENV === "production") {
+  console.log("🟢 Servindo frontend em modo produção");
   const frontendPath = path.join(__dirname, "..", "frontend", "dist");
+  console.log("📁 Caminho do frontend:", frontendPath);
   app.use(express.static(frontendPath));
 
   app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
+    console.log("➡️ Rota frontend capturada (SPA)");
     res.sendFile(path.join(frontendPath, "index.html"), (err) => {
       if (err) {
         console.error("❌ Erro ao servir index.html:", err);
@@ -56,10 +59,12 @@ if (process.env.NODE_ENV === "production") {
     });
   });
 } else {
+  console.log("🟡 Modo DEV: não servindo frontend");
   app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
     res.status(404).json({ error: "Rota não encontrada (modo dev)" });
   });
 }
+
 
 // Tratamento de erros
 const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
