@@ -13,6 +13,8 @@
         },
         "backend": {
           "rootDir": "backend",
+          "sourceDir": "backend",
+          "dockerfilePath": "backend/Dockerfile",
           "build": {
             "builder": "NIXPACKS",
             "buildCommand": "npm run build",

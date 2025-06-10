@@ -1,33 +1,36 @@
-# Etapa 1 - Build com permissões corretas
+# Etapa de build
 FROM node:18-alpine AS builder
-
-# Instala ferramentas básicas
-RUN apk add --no-cache bash
 
 WORKDIR /app
 
-# Copia e instala dependências com TypeScript
-COPY package*.json tsconfig.json ./
+# Instala dependências do sistema (bash opcional)
+RUN apk add --no-cache bash
+
+# Copia os arquivos de dependência
+COPY backend/package*.json ./
+COPY backend/tsconfig.json ./
+
+# Instala dependências de desenvolvimento
 RUN npm install
 
-# Garante permissão de execução para o TypeScript
-RUN chmod +x node_modules/.bin/tsc
+# Copia o restante do código
+COPY backend/src ./src
 
-COPY ./src ./src
-
-# Compila com npx para evitar problema de permissão
+# Compila usando npx para evitar problema de permissão
 RUN npx tsc
 
-# Etapa 2 - Runtime
+# Etapa de produção
 FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install --omit=dev
-
+# Copia apenas o necessário para produção
+COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
 
+# Expõe a porta
 EXPOSE 3000
 
+# Comando para iniciar a aplicação
 CMD ["node", "dist/server.js"]
