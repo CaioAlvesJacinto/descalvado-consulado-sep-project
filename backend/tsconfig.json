@@ -4,7 +4,7 @@
     "module": "commonjs",            // ✅ Troquei aqui!
     "moduleResolution": "node",
     "rootDir": "src",
-    "outDir": "dist",
+    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
