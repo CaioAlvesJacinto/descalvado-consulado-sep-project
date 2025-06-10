@@ -38,8 +38,12 @@ app.use("/pagamentos", paymentRoutes_1.default);
 app.get("/health", (_req, res) => {
     res.status(200).json({ status: "ok" });
 });
+// ✅ Rota padrão para manter Railway feliz
+app.get("/", (_req, res) => {
+    res.status(200).send("API online");
+});
 // Serve frontend em produção
-const frontendPath = path_1.default.join(__dirname, "../frontend/dist");
+const frontendPath = path_1.default.join(__dirname, "frontend/dist");
 app.use(express_1.default.static(frontendPath));
 // Só responde index.html se NÃO for rota de API
 app.get(/^\/(?!pagamentos\/).*/, (_req, res) => {
