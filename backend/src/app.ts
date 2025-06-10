@@ -51,6 +51,11 @@ app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
+// ✅ Rota padrão para manter Railway feliz
+app.get("/", (_req: Request, res: Response) => {
+  res.status(200).send("API online");
+});
+
 // Serve frontend em produção
 const frontendPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendPath));
