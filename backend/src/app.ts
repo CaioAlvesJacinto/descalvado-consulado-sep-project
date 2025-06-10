@@ -51,11 +51,6 @@ app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
-// ✅ Rota padrão para manter Railway feliz
-app.get("/", (_req: Request, res: Response) => {
-  res.status(200).send("API online");
-});
-
 // Serve frontend em produção
 const frontendPath = path.join(__dirname, "frontend/dist");
 app.use(express.static(frontendPath));
@@ -63,11 +58,12 @@ app.use(express.static(frontendPath));
 // Só responde index.html se NÃO for rota de API
 app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
   if (process.env.NODE_ENV === "production") {
-    try {
-      return res.sendFile(path.join(frontendPath, "index.html"));
-    } catch (err) {
-      console.warn("⚠️ index.html não encontrado.");
-    }
+    return res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+      if (err) {
+        console.error("❌ Erro ao servir index.html:", err);
+        res.status(500).send("Erro ao carregar o frontend");
+      }
+    });
   }
   res.status(404).json({ error: "Rota não encontrada" });
 });
