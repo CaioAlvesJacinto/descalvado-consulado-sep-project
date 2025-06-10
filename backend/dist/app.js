@@ -19,7 +19,7 @@ const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: process.env.FRONTEND_URL || "http://localhost:8080",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 // Middlewares
 app.use(express_1.default.json());
@@ -41,8 +41,17 @@ app.get("/health", (_req, res) => {
 // Serve frontend em produção
 const frontendPath = path_1.default.join(__dirname, "../frontend/dist");
 app.use(express_1.default.static(frontendPath));
-app.get("*", (_req, res) => {
-    res.sendFile(path_1.default.join(frontendPath, "index.html"));
+// Só responde index.html se NÃO for rota de API
+app.get(/^\/(?!pagamentos\/).*/, (_req, res) => {
+    if (process.env.NODE_ENV === "production") {
+        try {
+            return res.sendFile(path_1.default.join(frontendPath, "index.html"));
+        }
+        catch (err) {
+            console.warn("⚠️ index.html não encontrado.");
+        }
+    }
+    res.status(404).json({ error: "Rota não encontrada" });
 });
 // Tratamento de erros
 const errorHandler = (err, _req, res, _next) => {

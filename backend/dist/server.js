@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = __importDefault(require("http"));
 const app_1 = __importDefault(require("./app"));
 const env_1 = require("./config/env");
-// Cria servidor HTTP a partir da instância do Express
+// Railway/Render SEMPRE usa process.env.PORT (já tratado em APP_PORT)
 const server = http_1.default.createServer(app_1.default);
 // Captura de erros não tratados
 process.on("uncaughtException", (err) => {
@@ -17,7 +17,6 @@ process.on("unhandledRejection", (reason) => {
     console.error("Unhandled Rejection:", reason);
     process.exit(1);
 });
-// Inicia o servidor
 server.listen(env_1.APP_PORT, () => {
     console.log(`Servidor rodando na porta ${env_1.APP_PORT}`);
 });
