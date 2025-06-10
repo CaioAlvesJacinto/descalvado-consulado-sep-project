@@ -32,7 +32,10 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 app.use((req: Request, _res: Response, next: NextFunction) => {
-  console.log(`📣 [App] ${req.method} ${req.originalUrl} - Body:`, JSON.stringify(req.body));
+  console.log(
+    `📣 [App] ${req.method} ${req.originalUrl} - Body:`,
+    JSON.stringify(req.body)
+  );
   next();
 });
 
@@ -52,7 +55,8 @@ app.get("/health", (_req: Request, res: Response) => {
 const frontendPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendPath));
 
-app.get("*", (_req: Request, res: Response) => {
+// Catch-all: só para rotas que NÃO começam com /pagamentos
+app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
   if (process.env.NODE_ENV === "production") {
     try {
       return res.sendFile(path.join(frontendPath, "index.html"));
