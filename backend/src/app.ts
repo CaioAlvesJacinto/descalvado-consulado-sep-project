@@ -57,7 +57,7 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 // Serve frontend em produção
-const frontendPath = path.join(__dirname, "../frontend/dist");
+const frontendPath = path.join(__dirname, "frontend/dist");
 app.use(express.static(frontendPath));
 
 // Só responde index.html se NÃO for rota de API
