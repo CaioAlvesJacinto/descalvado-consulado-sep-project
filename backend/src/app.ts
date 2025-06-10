@@ -55,7 +55,7 @@ app.get("/health", (_req: Request, res: Response) => {
 const frontendPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendPath));
 
-// Catch-all: só para rotas que NÃO começam com /pagamentos
+// Só responde index.html se NÃO for rota de API
 app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
   if (process.env.NODE_ENV === "production") {
     try {

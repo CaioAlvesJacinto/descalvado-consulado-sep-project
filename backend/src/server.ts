@@ -1,9 +1,8 @@
 import http from "http";
 import app from "./app";
+import { APP_PORT } from "./config/env";
 
-// Usa a porta dinâmica para compatibilidade com Railway e Render
-const PORT = process.env.PORT || 3333;
-
+// Railway/Render SEMPRE usa process.env.PORT (já tratado em APP_PORT)
 const server = http.createServer(app);
 
 // Captura de erros não tratados
@@ -17,6 +16,6 @@ process.on("unhandledRejection", (reason) => {
   process.exit(1);
 });
 
-server.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+server.listen(APP_PORT, () => {
+  console.log(`Servidor rodando na porta ${APP_PORT}`);
 });
