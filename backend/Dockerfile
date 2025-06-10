@@ -3,20 +3,16 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Instala dependências do sistema (bash opcional)
+# Instala dependências do sistema
 RUN apk add --no-cache bash
 
-# Copia os arquivos de dependência
-COPY backend/package*.json ./
-COPY backend/tsconfig.json ./
+# Copia todo o conteúdo da pasta backend
+COPY backend/ ./
 
-# Instala dependências de desenvolvimento
+# Instala dependências
 RUN npm install
 
-# Copia o restante do código
-COPY backend/src ./src
-
-# Compila usando npx para evitar problema de permissão
+# Compila
 RUN npx tsc
 
 # Etapa de produção
@@ -24,13 +20,11 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copia apenas o necessário para produção
+# Copia artefatos de produção
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 
-# Expõe a porta
-EXPOSE 3000
+EXPOSE 3333
 
-# Comando para iniciar a aplicação
 CMD ["node", "dist/server.js"]
