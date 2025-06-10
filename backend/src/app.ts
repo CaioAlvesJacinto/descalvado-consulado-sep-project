@@ -1,13 +1,7 @@
 import './config/env';
 import cors from "cors";
 import morgan from "morgan";
-import express, {
-  Application,
-  Request,
-  Response,
-  NextFunction,
-  ErrorRequestHandler,
-} from "express";
+import express, { Application, Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import path from "path";
 
 // Routers
@@ -32,10 +26,7 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 app.use((req: Request, _res: Response, next: NextFunction) => {
-  console.log(
-    `📣 [App] ${req.method} ${req.originalUrl} - Body:`,
-    JSON.stringify(req.body)
-  );
+  console.log(`📣 [App] ${req.method} ${req.originalUrl} - Body:`, JSON.stringify(req.body));
   next();
 });
 
@@ -51,22 +42,24 @@ app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
-// Serve frontend em produção
-const frontendPath = path.join(__dirname, "frontend/dist");
-app.use(express.static(frontendPath));
+// Serve frontend se estiver em produção
+if (process.env.NODE_ENV === "production") {
+  const frontendPath = path.join(__dirname, "frontend/dist");
+  app.use(express.static(frontendPath));
 
-// Só responde index.html se NÃO for rota de API
-app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
-  if (process.env.NODE_ENV === "production") {
-    return res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+  app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
+    res.sendFile(path.join(frontendPath, "index.html"), (err) => {
       if (err) {
         console.error("❌ Erro ao servir index.html:", err);
         res.status(500).send("Erro ao carregar o frontend");
       }
     });
-  }
-  res.status(404).json({ error: "Rota não encontrada" });
-});
+  });
+} else {
+  app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
+    res.status(404).json({ error: "Rota não encontrada (modo dev)" });
+  });
+}
 
 // Tratamento de erros
 const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
