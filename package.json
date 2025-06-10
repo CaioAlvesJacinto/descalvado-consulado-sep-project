@@ -2,12 +2,12 @@
   "name": "plataforma-de-ingressos",
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently -k \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
-    "build:frontend": "cd frontend && npm install && npm run build",
-    "build:backend": "cd backend && npm ci && npm run build",
-    "build": "npm run build:frontend && npm run build:backend",
-    "start": "npm run start --prefix backend",
-    "postinstall": "npm run build"
+    "dev": "concurrently -k \"yarn --cwd frontend dev\" \"yarn --cwd backend dev\"",
+    "build:frontend": "cd frontend && yarn install && yarn build",
+    "build:backend": "cd backend && yarn install && yarn build",
+    "build": "yarn build:frontend && yarn build:backend",
+    "start": "yarn --cwd backend start",
+    "postinstall": "yarn build"
   },
   "dependencies": {
     "concurrently": "^8.0.0"
