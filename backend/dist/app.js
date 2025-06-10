@@ -38,21 +38,24 @@ app.use("/pagamentos", paymentRoutes_1.default);
 app.get("/health", (_req, res) => {
     res.status(200).json({ status: "ok" });
 });
-// Serve frontend em produção
-const frontendPath = path_1.default.join(__dirname, "frontend/dist");
-app.use(express_1.default.static(frontendPath));
-// Só responde index.html se NÃO for rota de API
-app.get(/^\/(?!pagamentos\/).*/, (_req, res) => {
-    if (process.env.NODE_ENV === "production") {
-        return res.sendFile(path_1.default.join(frontendPath, "index.html"), (err) => {
+// Serve frontend se estiver em produção
+if (process.env.NODE_ENV === "production") {
+    const frontendPath = path_1.default.join(__dirname, "..", "frontend", "dist");
+    app.use(express_1.default.static(frontendPath));
+    app.get(/^\/(?!pagamentos\/).*/, (_req, res) => {
+        res.sendFile(path_1.default.join(frontendPath, "index.html"), (err) => {
             if (err) {
                 console.error("❌ Erro ao servir index.html:", err);
                 res.status(500).send("Erro ao carregar o frontend");
             }
         });
-    }
-    res.status(404).json({ error: "Rota não encontrada" });
-});
+    });
+}
+else {
+    app.get(/^\/(?!pagamentos\/).*/, (_req, res) => {
+        res.status(404).json({ error: "Rota não encontrada (modo dev)" });
+    });
+}
 // Tratamento de erros
 const errorHandler = (err, _req, res, _next) => {
     console.error("🛑 [App] Erro interno no servidor:", err);

@@ -44,7 +44,7 @@ app.get("/health", (_req: Request, res: Response) => {
 
 // Serve frontend se estiver em produção
 if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "frontend/dist");
+  const frontendPath = path.join(__dirname, "..", "frontend", "dist");
   app.use(express.static(frontendPath));
 
   app.get(/^\/(?!pagamentos\/).*/, (_req: Request, res: Response) => {
