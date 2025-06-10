@@ -1,51 +1,59 @@
 import './config/env';
 import cors from "cors";
 import morgan from "morgan";
-import express, { Request, Response, NextFunction } from "express";
+import express, { Application, Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import path from "path";
 
-
+// Routers
 import pixRouter from "./pagamentos/routes/pixRoutes";
 import cardRouter from "./pagamentos/routes/cardRoutes";
 import webhookRoutes from "./pagamentos/routes/webhookRoutes";
-import paymentRoutes from "./pagamentos/routes/paymentRoutes"; // ⬅️ novo
-import checkoutRoutes from "./pagamentos/checkout/checkoutRoutes"; // ✅ NOVO
+import paymentRoutes from "./pagamentos/routes/paymentRoutes";
+import checkoutRoutes from "./pagamentos/checkout/checkoutRoutes";
 
+const app: Application = express();
 
-const app = express();
-
+// CORS
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:8080",
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
+// Middlewares
 app.use(express.json());
-
-app.use((req, _res, next) => {
+app.use(morgan("dev"));
+app.use((req: Request, _res: Response, next: NextFunction) => {
   console.log(`📣 [App] ${req.method} ${req.originalUrl} - Body:`, JSON.stringify(req.body));
   next();
 });
 
-app.use(morgan("dev"));
-
 // Rotas de pagamento
 app.use("/pagamentos/pix", pixRouter);
 app.use("/pagamentos/card", cardRouter);
-app.use("/pagamentos/checkout", checkoutRoutes); // ✅ NOVO
+app.use("/pagamentos/checkout", checkoutRoutes);
 app.use("/pagamentos", webhookRoutes);
-app.use("/pagamentos", paymentRoutes); // ✅ adiciona aqui
+app.use("/pagamentos", paymentRoutes);
 
-// Health Check
-app.get("/health", (_req, res) => {
+// Health check
+app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
-// Tratamento de erro
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+// Serve frontend em produção
+const frontendPath = path.join(__dirname, "../frontend/dist");
+app.use(express.static(frontendPath));
+app.get("*", (_req: Request, res: Response) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+// Tratamento de erros
+const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   console.error("🛑 [App] Erro interno no servidor:", err);
-  res.status(err.status || 500).json({
+  res.status((err.status as number) || 500).json({
     error: err.message || "Erro interno no servidor",
   });
-});
+};
+app.use(errorHandler);
 
 export default app;

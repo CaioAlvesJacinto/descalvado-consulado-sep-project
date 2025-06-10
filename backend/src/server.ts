@@ -1,5 +1,3 @@
-// backend/src/server.ts
-
 import http from "http";
 import app from "./app";
 import { APP_PORT } from "./config/env";

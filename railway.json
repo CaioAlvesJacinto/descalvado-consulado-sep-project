@@ -1,0 +1,25 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "projects": {
+    "default": {
+      "services": {
+        "frontend": {
+          "rootDir": "frontend",
+          "build": {
+            "builder": "NIXPACKS",
+            "buildCommand": "npm run build",
+            "startCommand": "npm run preview"
+          }
+        },
+        "backend": {
+          "rootDir": "backend",
+          "build": {
+            "builder": "NIXPACKS",
+            "buildCommand": "npm run build",
+            "startCommand": "npm run start"
+          }
+        }
+      }
+    }
+  }
+}
