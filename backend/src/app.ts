@@ -45,7 +45,8 @@ app.get("/health", (_req: Request, res: Response) => {
 // Serve frontend se estiver em produção
 if (process.env.NODE_ENV === "production") {
   console.log("🟢 Servindo frontend em modo produção");
-  const frontendPath = path.join(__dirname, "..", "frontend", "dist");
+  const frontendPath = path.resolve(__dirname, "../../frontend/dist");
+
   console.log("📁 Caminho do frontend:", frontendPath);
   app.use(express.static(frontendPath));
 
