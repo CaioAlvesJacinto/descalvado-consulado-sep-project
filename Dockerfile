@@ -9,7 +9,10 @@ FROM node:18-alpine as backend-builder
 WORKDIR /app
 COPY backend ./backend
 COPY --from=frontend-builder /app/frontend/dist ./backend/frontend/dist
-RUN cd backend && npm install && npm run build
+WORKDIR /app/backend
+
+# ⚠️ Mova o chmod para depois do npm install
+RUN npm install && chmod +x ./node_modules/.bin/tsc && npm run build
 
 # Imagem final
 FROM node:18-alpine
