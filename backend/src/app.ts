@@ -1,7 +1,13 @@
 import './config/env';
 import cors from "cors";
 import morgan from "morgan";
-import express, { Application, Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import express, {
+  Application,
+  Request,
+  Response,
+  NextFunction,
+  ErrorRequestHandler,
+} from "express";
 import path from "path";
 
 // Routers
@@ -14,11 +20,13 @@ import checkoutRoutes from "./pagamentos/checkout/checkoutRoutes";
 const app: Application = express();
 
 // CORS
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:8080",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:8080",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // Middlewares
 app.use(express.json());
@@ -43,8 +51,16 @@ app.get("/health", (_req: Request, res: Response) => {
 // Serve frontend em produção
 const frontendPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendPath));
+
 app.get("*", (_req: Request, res: Response) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
+  if (process.env.NODE_ENV === "production") {
+    try {
+      return res.sendFile(path.join(frontendPath, "index.html"));
+    } catch (err) {
+      console.warn("⚠️ index.html não encontrado.");
+    }
+  }
+  res.status(404).json({ error: "Rota não encontrada" });
 });
 
 // Tratamento de erros

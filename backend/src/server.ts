@@ -1,8 +1,9 @@
 import http from "http";
 import app from "./app";
-import { APP_PORT } from "./config/env";
 
-// Cria servidor HTTP a partir da instância do Express
+// Usa a porta dinâmica para compatibilidade com Railway e Render
+const PORT = process.env.PORT || 3333;
+
 const server = http.createServer(app);
 
 // Captura de erros não tratados
@@ -16,7 +17,6 @@ process.on("unhandledRejection", (reason) => {
   process.exit(1);
 });
 
-// Inicia o servidor
-server.listen(APP_PORT, () => {
-  console.log(`Servidor rodando na porta ${APP_PORT}`);
+server.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
