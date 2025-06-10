@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "concurrently -k \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
-    "build:frontend": "npm install --prefix frontend && npm run build --prefix frontend",
-    "build:backend": "npm install --prefix backend && npm run build --prefix backend",
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "build:backend": "cd backend && npm ci && npm run build",
     "build": "npm run build:frontend && npm run build:backend",
-    "start": "node backend/dist/server.js",
+    "start": "npm run start --prefix backend",
     "postinstall": "npm run build"
   },
   "dependencies": {
